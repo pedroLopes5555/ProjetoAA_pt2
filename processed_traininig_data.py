@@ -25,7 +25,7 @@ def create_X_data(df):
 
 
 def delete_missing_columns(df):
-    df.drop(columns=['GeneticRisk', 'ComorbidityIndex', 'TreatmentResponse', 'Censored'], inplace=True)
+    df.drop(columns=['GeneticRisk', 'ComorbidityIndex', 'TreatmentResponse'], inplace=True)
     return df
 
 
@@ -34,4 +34,4 @@ def delete_censored_survival_time(df):
     return df
 
 
-#start()
+start()

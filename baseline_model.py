@@ -5,7 +5,36 @@ from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import StandardScaler, PolynomialFeatures
+from sklearn.preprocessing import StandardScaler
+
+
+def plot_y_yhat(y_test, y_pred, plot_title="plot"):
+    y_test = np.array(y_test).flatten()
+    y_pred = np.array(y_pred).flatten()
+    MAX = 500  # Limit the number of points to plot if there are many
+    if len(y_test) > MAX:
+        idx = np.random.choice(len(y_test), MAX, replace=False)
+    else:
+        idx = np.arange(len(y_test))
+
+    # Create the scatter plot
+    plt.figure(figsize=(10, 6))
+    plt.scatter(y_test[idx], y_pred[idx], color='blue', label='Predicted vs Actual')
+
+    # Add the identity line (y = y_hat) for reference
+    plt.plot([min(y_test), max(y_test)], [min(y_test), max(y_test)], color='red', linestyle='--', label='y = y_hat')
+
+    # Set labels and title
+    plt.xlabel('True Values (Survival Time)')
+    plt.ylabel('Predicted Values (Survival Time)')
+    plt.title(plot_title)
+
+    # Show the legend
+    plt.legend()
+
+    # Show the plot
+    plt.show()
+
 
 
 def submit_base_model():
@@ -49,6 +78,7 @@ def test_base_model():
     pipeline.fit(X_train, y_train)
 
     y_pred = pipeline.predict(X_test)
+    plot_y_yhat(y_test, y_pred)
     mse = mean_squared_error(y_test, y_pred)
     print(f'Test Set Mean Squared Error: {mse}')
 
