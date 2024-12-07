@@ -38,4 +38,4 @@ def delete_missing_columns(df):
 def delete_censored_survival_time(df):
     df = df.dropna(subset=['SurvivalTime'])
     return df
-start()
+
