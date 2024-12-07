@@ -28,6 +28,7 @@ def submit_polynomial_model():
 
     y_pred_df.to_csv('data/polynomial-submission-02.csv', index=False)
 
+
 def test_polynomial_model():
     X_train = pd.read_csv('data/X_data.csv')
     y_train = pd.read_csv('data/y_data.csv')
@@ -48,16 +49,26 @@ def test_polynomial_model():
         mean_mse = mse_scores.mean()
 
         pipeline.fit(X_train, y_train)
-
         y_pred = pipeline.predict(X_test)
         mse = mean_squared_error(y_test, y_pred)
 
-        results.append((degree, mean_mse, mse))
+        results.append((degree, mse_scores, mse))
 
-        print(f'Degree {degree}: Cross-validated Mean Squared Error: {mean_mse}, Test Set Mean Squared Error: {mse}')
+    results_df = pd.DataFrame(results, columns=['Degree', 'Cross-validated MSE', 'Test MSE'])
 
-    return
+    stats = results_df['Cross-validated MSE'].apply(lambda x: pd.Series({
+        'Max Error': x.max(),
+        'Min Error': x.min(),
+        'Mean Error': x.mean(),
+        'Std Error': x.std()
+    }))
 
+    stats['Degree'] = results_df['Degree']
+    stats = stats[['Degree', 'Max Error', 'Min Error', 'Mean Error', 'Std Error']]
 
-#test_polynomial_model()
-#submit_polynomial_model()
+    print("")
+    print(stats)
+
+# Call the function
+test_polynomial_model()
+

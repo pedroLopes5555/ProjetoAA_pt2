@@ -7,6 +7,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.neighbors import KNeighborsRegressor
 
+
 def submit_knn_model():
     X_train = pd.read_csv('data/X_data.csv')
     y_train = pd.read_csv('data/y_data.csv')
@@ -35,12 +36,13 @@ def test_knn_model():
 
     results = []
 
-    for k in range(1, 101):  # Testar valores de k de 1 a 10
+    for k in range(1, 101):
         pipeline = Pipeline([
             ('scaler', StandardScaler()),
             ('knn', KNeighborsRegressor(n_neighbors=k))
         ])
 
+        # Cross-validation to calculate the mean squared error
         scores = cross_val_score(pipeline, X_train, y_train, cv=5, scoring='neg_mean_squared_error')
         mse_scores = -scores
         mean_mse = mse_scores.mean()
@@ -50,11 +52,22 @@ def test_knn_model():
         y_pred = pipeline.predict(X_test)
         mse = mean_squared_error(y_test, y_pred)
 
-        results.append((k, mean_mse, mse))
+        results.append((k, mse_scores, mse))
 
-        print(f'k = {k}: Cross-validated Mean Squared Error: {mean_mse}, Test Set Mean Squared Error: {mse}')
+    results_df = pd.DataFrame(results, columns=['k', 'Cross-validated MSE', 'Test MSE'])
 
-    return
+    stats = results_df['Cross-validated MSE'].apply(lambda x: pd.Series({
+        'Max Error': x.max(),
+        'Min Error': x.min(),
+        'Mean Error': x.mean(),
+        'Std Error': x.std()
+    }))
+
+    stats['k'] = results_df['k']
+    stats = stats[['k', 'Max Error', 'Min Error', 'Mean Error', 'Std Error']]
+
+    print("")
+    print(stats)
 
 
 #test_knn_model()
